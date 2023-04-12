@@ -25,8 +25,8 @@ fn todo_item(
     }: &TodoItemProps,
 ) -> Html {
     let on_change = {
-        let todo = todo.clone();
         let on_toggle = on_toggle.clone();
+        let todo = todo.clone();
 
         Callback::from(move |evt: Event| {
             let input = evt
@@ -35,7 +35,7 @@ fn todo_item(
                 .unwrap_throw();
 
             on_toggle.emit(ToggleTodo {
-                id: todo.clone().id,
+                id: todo.id,
                 done: input.checked(),
             })
         })
@@ -52,18 +52,18 @@ fn todo_item(
     };
 
     html! {
-        <li key={todo.id} class={classes!("w-full flex-1".to_string())}>
+        <li key={todo.id} class="w-full flex-1">
             <label
                 class={classes!(
                     "w-full flex gap-2 items-center cursor-pointer justify-between".to_string(),
                     todo.done.then_some("line-through"),
                 )}
             >
-                <div class={classes!("flex gap-2".to_string())}>
-                    <input type={"checkbox"} onchange={on_change} checked={todo.done} />
+                <div class="flex gap-2">
+                    <input type="checkbox" onchange={on_change} checked={todo.done} />
                     <span>{todo.text.to_string()}</span>
                 </div>
-                <button onclick={on_remove} class={classes!("btn btn-xs btn-circle btn-ghost text-red-400 text-lg leading-3".to_string())}>{"×"}</button>
+                <button onclick={on_remove} class="btn btn-xs btn-circle btn-ghost text-red-400 text-lg leading-3">{"×"}</button>
             </label>
         </li>
     }
@@ -106,7 +106,7 @@ fn app() -> Html {
             },
         ]
     });
-    let next_todo = use_state(|| String::default());
+    let next_todo = use_state(String::default);
     let filter = use_state(|| Filter::All);
     let next_id = todos.len();
 
@@ -168,9 +168,8 @@ fn app() -> Html {
 
     let on_remove = {
         let todos = todos.clone();
-
         Callback::from(move |id: usize| {
-            let next: Vec<Todo> = todos.iter().filter(|todo| todo.id != id).cloned().collect();
+            let next = todos.iter().filter(|todo| todo.id != id).cloned().collect();
 
             todos.set(next);
         })
@@ -200,23 +199,23 @@ fn app() -> Html {
     });
 
     html! {
-        <div class={classes!("p-4 flex flex-col gap-3".to_string())}>
-            <h1 class={classes!("text-3xl font-bold".to_string())}>{"Todos"}</h1>
+        <div class="p-4 flex flex-col gap-3">
+            <h1 class="text-3xl font-bold">{"Todos"}</h1>
 
-            <div class={classes!("flex btn-group".to_string())}>
+            <div class="flex btn-group">
                <button onclick={on_filter_all} class={classes!("btn btn-sm".to_string(), get_filter_button_class(Filter::All, &filter))}>{"All"}</button>
                <button onclick={on_filter_pending} class={classes!("btn btn-sm".to_string(), get_filter_button_class(Filter::Pending, &filter))}>{"Pending"}</button>
                <button onclick={on_filter_done} class={classes!("btn btn-sm".to_string(), get_filter_button_class(Filter::Done, &filter))}>{"Done"}</button>
             </div>
 
-            <ul class={classes!("flex w-[300px] flex-col".to_string())}>
+            <ul class="flex w-[300px] flex-col">
                 if filtered_todos.clone().count() == 0 {
                     <p>{"Nothing here"}</p>
                 } else {
                     {for filtered_todos}
                 }
 
-                <li class={classes!("flex-1 mt-2".to_string())}>
+                <li class="flex-1 mt-2">
                     <form onsubmit={on_add}>
                         <input type="text" class={classes!("p-1 rounded w-full".to_string())} value={next_todo.to_string()} oninput={on_input} autofocus={true} placeholder="Add todo..." />
                     </form>
